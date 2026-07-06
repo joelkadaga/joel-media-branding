@@ -2,8 +2,8 @@ import React, { useState } from 'react'
 import { PORTFOLIO, CATEGORIES } from './portfolio.js'
 
 // ====== BADILISHA HAPA (Edit here) ======
-const WHATSAPP_NUMBER = '255XXXXXXXXX' // Weka namba yako ya WhatsApp bila alama ya +
-const PHONE_DISPLAY = '+255 XXX XXX XXX'
+const WHATSAPP_NUMBER = '255745152680' // WhatsApp ya Joel Media Branding
+const PHONE_DISPLAY = '+255 745 152 680 / +255 627 150 780'
 // ========================================
 
 const waLink = (msg) =>
