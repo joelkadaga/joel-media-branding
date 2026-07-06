@@ -7,8 +7,8 @@ Phase 1: Public homepage (React + Vite + Tailwind), deployed free on Cloudflare 
 Fungua `src/App.jsx`, mstari wa 4:
 
 ```js
-const WHATSAPP_NUMBER = '255XXXXXXXXX' // weka namba yako, mfano: 255712345678
-const PHONE_DISPLAY = '+255 XXX XXX XXX'
+const WHATSAPP_NUMBER = '255745152680' // weka namba yako, mfano: 255712345678
+const PHONE_DISPLAY = '+255 627 150 780'
 ```
 
 ## Hatua ya 1 — Weka code kwenye GitHub
