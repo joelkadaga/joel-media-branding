@@ -1,8 +1,9 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { PORTFOLIO, CATEGORIES } from './portfolio.js'
 
 // ====== BADILISHA HAPA (Edit here) ======
-const WHATSAPP_NUMBER = '255745152680' // Weka namba yako ya WhatsApp bila alama ya +
-const PHONE_DISPLAY = '+255 627 150 780'
+const WHATSAPP_NUMBER = '255XXXXXXXXX' // Weka namba yako ya WhatsApp bila alama ya +
+const PHONE_DISPLAY = '+255 XXX XXX XXX'
 // ========================================
 
 const waLink = (msg) =>
@@ -30,6 +31,61 @@ const services = [
     emoji: '🚗',
   },
 ]
+
+function Gallery() {
+  const [filter, setFilter] = useState('zote')
+  const items =
+    filter === 'zote' ? PORTFOLIO : PORTFOLIO.filter((p) => p.category === filter)
+
+  return (
+    <div>
+      <div className="mt-6 flex flex-wrap gap-2">
+        {CATEGORIES.map((c) => (
+          <button
+            key={c.id}
+            onClick={() => setFilter(c.id)}
+            className={
+              'rounded-full px-4 py-1.5 text-sm font-semibold transition ' +
+              (filter === c.id
+                ? 'bg-brand-purple text-white'
+                : 'bg-white text-brand-ink/70 hover:bg-brand-purple/10')
+            }
+          >
+            {c.label}
+          </button>
+        ))}
+      </div>
+
+      <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {items.map((p) => (
+          <div
+            key={p.id}
+            className="group overflow-hidden rounded-2xl bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl"
+          >
+            <div className="aspect-[4/3] overflow-hidden">
+              <img
+                src={p.image}
+                alt={p.title}
+                loading="lazy"
+                className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+              />
+            </div>
+            <div className="p-5">
+              <h3 className="font-display text-lg text-brand-purple">{p.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-brand-ink/70">{p.desc}</p>
+              <a
+                href={waLink(`Habari Joel Media Branding! Nimeona kazi yenu ya "${p.title}" kwenye website. Nataka bango kama hilo la biashara yangu.`)}
+                className="mt-4 inline-block rounded-full bg-brand-orange px-5 py-2 text-sm font-semibold text-brand-ink transition hover:bg-brand-orangedeep"
+              >
+                Nataka kama hii →
+              </a>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
 
 export default function App() {
   return (
@@ -100,14 +156,15 @@ export default function App() {
         </div>
       </section>
 
-      {/* Catalog teaser — Phase 2 will replace this with the real gallery */}
-      <section className="bg-brand-mist/60">
-        <div className="mx-auto max-w-6xl px-4 py-16 text-center">
-          <h2 className="font-display text-3xl text-brand-purple">Katalogi Inakuja Hivi Karibuni</h2>
-          <p className="mx-auto mt-3 max-w-xl text-brand-ink/70">
-            Tunaandaa picha za kazi zetu bora — mabango ya 3D, 2D na CNC —
-            uweze kuchagua unachokipenda kwa urahisi.
+      {/* Kazi Zetu — Portfolio gallery */}
+      <section id="kazi-zetu" className="bg-brand-mist/60">
+        <div className="mx-auto max-w-6xl px-4 py-16">
+          <h2 className="font-display text-3xl text-brand-purple">Kazi Zetu</h2>
+          <p className="mt-2 max-w-2xl text-brand-ink/70">
+            Baadhi ya kazi tulizokamilisha. Ukiona unachokipenda, bonyeza
+            &quot;Nataka kama hii&quot; — tutakuletea bei mara moja.
           </p>
+          <Gallery />
         </div>
       </section>
 
