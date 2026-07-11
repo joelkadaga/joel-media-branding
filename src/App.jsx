@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { PORTFOLIO, CATEGORIES } from './portfolio.js'
+import StaffApp from './StaffApp.jsx'
 
 // ====== BADILISHA HAPA (Edit here) ======
 const WHATSAPP_NUMBER = '255745152680' // WhatsApp ya Joel Media Branding
@@ -88,6 +89,15 @@ function Gallery() {
 }
 
 export default function App() {
+  const [route, setRoute] = useState(window.location.hash)
+  React.useEffect(() => {
+    const onHash = () => setRoute(window.location.hash)
+    window.addEventListener('hashchange', onHash)
+    return () => window.removeEventListener('hashchange', onHash)
+  }, [])
+
+  if (route.startsWith('#/staff')) return <StaffApp />
+
   return (
     <div className="min-h-screen bg-brand-paper font-body text-brand-ink">
       {/* Header */}
@@ -178,6 +188,7 @@ export default function App() {
             </p>
           </div>
           <p className="text-xs text-white/50">
+            <a href="#/staff" className="mr-3 hover:text-white">Staff</a>
             © {new Date().getFullYear()} Joel Media Branding. Haki zote zimehifadhiwa.
           </p>
         </div>
