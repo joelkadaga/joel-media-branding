@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { supabase } from './supabase.js'
+import { generateQuotePdf } from './quotePdf.js'
 
 const TZS = (n) => new Intl.NumberFormat('en-US').format(Math.round(n || 0)) + ' TZS'
 
@@ -111,6 +112,7 @@ function Calculator({ session }) {
 
   const [saving, setSaving] = useState(false)
   const [savedMsg, setSavedMsg] = useState('')
+  const [lastSaved, setLastSaved] = useState(null)
 
   useEffect(() => {
     supabase.from('rate_table').select('*').eq('active', true).order('id').then(({ data }) => setRates(data || []))
@@ -208,11 +210,26 @@ function Calculator({ session }) {
       if (e4) throw e4
 
       setSavedMsg(`✅ Quote ${qn} imehifadhiwa — Jumla: ${TZS(total)} (Advance 70%: ${TZS(total * 0.7)})`)
+      setLastSaved({
+        quote: { quote_number: qn, created_at: new Date().toISOString(), valid_until: validUntil, subtotal: itemTotal, extras, discount: Number(discount) || 0, total, deposit_percent: 70 },
+        customer: { name: custName, business_name: custBusiness, phone: custPhone },
+        items: [{ description: itemDescription(), size_value: manualMode ? Number(manualSize) || null : Number(qty) || selectedTier?.meters || null, unit_price: manualMode ? Number(manualPrice) : selectedTier?.price_tzs || 0, line_total: itemTotal }],
+      })
       loadRecent()
     } catch (err) {
       alert('Imeshindikana kuhifadhi: ' + err.message)
     }
     setSaving(false)
+  }
+
+  const downloadPdfFor = async (quoteNumber) => {
+    const { data: q } = await supabase
+      .from('quotes')
+      .select('*, customers(name,business_name,phone), quote_items(*)')
+      .eq('quote_number', quoteNumber)
+      .single()
+    if (!q) return alert('Quote haikupatikana.')
+    await generateQuotePdf({ quote: q, customer: q.customers || {}, items: q.quote_items || [] })
   }
 
   const field = 'w-full rounded-xl border border-brand-mist px-4 py-2.5 outline-none focus:border-brand-purple'
@@ -433,6 +450,14 @@ function Calculator({ session }) {
                 {saving ? 'Inahifadhi...' : 'Hifadhi Quote'}
               </button>
               {savedMsg && <p className="mt-3 text-sm">{savedMsg}</p>}
+              {lastSaved && (
+                <button
+                  onClick={() => generateQuotePdf(lastSaved)}
+                  className="mt-3 w-full rounded-xl border-2 border-brand-orange bg-transparent py-2.5 font-semibold text-white transition hover:bg-white/10"
+                >
+                  📄 Pakua PDF ({lastSaved.quote.quote_number})
+                </button>
+              )}
             </div>
 
             <div className="rounded-2xl bg-white p-5 shadow-sm">
@@ -440,12 +465,21 @@ function Calculator({ session }) {
               <ul className="mt-3 space-y-2 text-sm">
                 {recent.length === 0 && <li className="text-brand-ink/50">Hakuna bado.</li>}
                 {recent.map((q) => (
-                  <li key={q.quote_number} className="flex justify-between border-b border-brand-mist pb-1 last:border-0">
+                  <li key={q.quote_number} className="flex items-center justify-between gap-2 border-b border-brand-mist pb-1 last:border-0">
                     <span>
                       {q.quote_number}
                       <span className="block text-xs text-brand-ink/50">{q.customers?.name}</span>
                     </span>
-                    <span className="font-semibold">{TZS(q.total)}</span>
+                    <span className="flex items-center gap-2">
+                      <span className="font-semibold">{TZS(q.total)}</span>
+                      <button
+                        onClick={() => downloadPdfFor(q.quote_number)}
+                        title="Pakua PDF"
+                        className="rounded-lg border border-brand-mist px-2 py-1 text-xs font-semibold text-brand-purple hover:border-brand-purple"
+                      >
+                        PDF
+                      </button>
+                    </span>
                   </li>
                 ))}
               </ul>
